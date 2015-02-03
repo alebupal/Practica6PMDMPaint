@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Practica6PMDMPaint</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_configuracion">configuracion</string>
+    <string name="m_color">Color</string>
+    <string name="m_configuracion">Configuracion</string>
+    <string name="m_nuevo">Nuevo dibujo</string>
+    <string name="tv_tamano">Tamaño</string>
+    <string name="tv_forma">Forma</string>
+    <string name="tv_relleno">Relleno</string>
+    <string name="btAceptar">Aceptar</string>
+
+</resources>
