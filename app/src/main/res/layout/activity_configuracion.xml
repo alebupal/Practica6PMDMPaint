@@ -62,37 +62,43 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/imageView3"
-                android:src="@drawable/linea"
-                android:layout_marginLeft="30dp" />
+                android:id="@+id/imageView2"
+                android:src="@drawable/pincel" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/imageView2"
-                android:src="@drawable/pincel"
-                android:layout_marginLeft="30dp" />
+                android:id="@+id/imageView3"
+                android:src="@drawable/linea"
+                android:layout_marginLeft="15dp" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageView6"
                 android:src="@drawable/goma"
-                android:layout_marginLeft="30dp" />
+                android:layout_marginLeft="15dp" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageView5"
                 android:src="@drawable/circulo"
-                android:layout_marginLeft="30dp" />
+                android:layout_marginLeft="15dp" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageView4"
                 android:src="@drawable/rectangulo"
-                android:layout_marginLeft="30dp" />
+                android:layout_marginLeft="15dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView"
+                android:src="@drawable/elipse"
+                android:layout_marginLeft="15dp" />
 
         </LinearLayout>
 
@@ -107,37 +113,43 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/rbLinea"
-                android:checked="true"
-                android:layout_marginLeft="30dp" />
+                android:id="@+id/rbPincel"
+                android:checked="true" />
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/rbPincel"
-                android:checked="true"
-                android:layout_marginLeft="30dp" />
+                android:id="@+id/rbLinea"
+                android:checked="false"
+                android:layout_marginLeft="16dp" />
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/rbGoma"
                 android:checked="false"
-                android:layout_marginLeft="30dp" />
+                android:layout_marginLeft="16dp" />
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/rbCirculo"
                 android:checked="false"
-                android:layout_marginLeft="30dp" />
+                android:layout_marginLeft="16dp" />
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/rbRectangulo"
                 android:checked="false"
-                android:layout_marginLeft="30dp" />
+                android:layout_marginLeft="16dp" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/rbElipse"
+                android:checked="false"
+                android:layout_marginLeft="16dp" />
 
         </RadioGroup>
 

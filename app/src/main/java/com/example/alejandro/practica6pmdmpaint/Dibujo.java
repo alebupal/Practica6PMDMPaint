@@ -1,21 +1,33 @@
 package com.example.alejandro.practica6pmdmpaint;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 
 public class Dibujo extends ActionBarActivity {
     private Vista v;
-    private final static int CONFIG=1;
+    private final static int CONFIG=1, CARGAR=2;
     private RelativeLayout rl;
+    String nombre;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +37,6 @@ public class Dibujo extends ActionBarActivity {
         rl = (RelativeLayout)findViewById(R.id.layout);
         v = new Vista(this);
         rl.addView(v);
-
-
     }
 
 
@@ -48,11 +58,7 @@ public class Dibujo extends ActionBarActivity {
             colorPicker();
             return true;
         }else if(id == R.id.m_configuracion) {
-            Intent i= new Intent(this, Configuracion.class);
-            i.putExtra("forma",v.getForma());
-            i.putExtra("tamano",v.getTamano());
-            i.putExtra("relleno",v.isRelleno());
-            startActivityForResult(i, CONFIG);
+            configuracion();
             return true;
         }else if(id == R.id.m_nuevo) {
 
@@ -60,17 +66,21 @@ public class Dibujo extends ActionBarActivity {
             v = new Vista(this);
             rl.addView(v);
             return true;
+        }else if(id == R.id.m_cargar) {
+            cargarImagen();
+            return true;
+        }else if(id == R.id.m_guardar) {
+            guardarImagen();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     private void colorPicker(){
-        int colorInicial = Color.BLACK;
-        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(this, colorInicial, new ColorPickerDialog.OnColorSelectedListener() {
+        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(this, v.getColor(), new ColorPickerDialog.OnColorSelectedListener() {
             @Override
             public void onColorSelected(int color) {
-                tostada(color+"");
                 v.setColor(color);
             }
 
@@ -87,11 +97,71 @@ public class Dibujo extends ActionBarActivity {
             String forma=data.getStringExtra("forma");
             float tamano=data.getFloatExtra("tamano",1);
             boolean relleno = data.getBooleanExtra("relleno",false);
-            tostada(relleno+"");
+
             v.setForma(forma);
             v.setTamano(tamano);
             v.setRelleno(relleno);
+        }else if(requestCode == CARGAR && resultCode == Activity.RESULT_OK){
+            Uri uri = data.getData();
+            Bitmap bitmap;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            } catch (Exception ex){
+                bitmap = null;
+            }
+            v.cargarImagen(bitmap);
         }
+
+    }
+
+    public void cargarImagen(){
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        galleryIntent.setType("image/*");
+        Intent i = Intent.createChooser(galleryIntent, "imagen");
+        startActivityForResult(i, CARGAR);
+    }
+
+    public void configuracion(){
+        Intent i= new Intent(this, Configuracion.class);
+        i.putExtra("forma",v.getForma());
+        i.putExtra("tamano",v.getTamano());
+        i.putExtra("relleno",v.isRelleno());
+        startActivityForResult(i, CONFIG);
+    }
+    public void guardarImagen(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(R.string.t_guardar);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        final View vista = inflater.inflate(R.layout.dialog_guardar, null);
+        alert.setView(vista);
+        final EditText et=(EditText)vista.findViewById(R.id.tvNombre);
+        alert.setPositiveButton(android.R.string.ok,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        if (et.getText().toString().compareTo("")==0){
+                            tostada(getString(R.string.tostada_guardar));
+                        }else{
+                            nombre=et.getText().toString();
+                            Bitmap mapaDeBits= v.getMapaDeBits();
+                            File carpeta = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath());
+                            File archivo = new File(carpeta, nombre+".PNG");
+                            try {
+                                FileOutputStream fos = new FileOutputStream(archivo);
+                                mapaDeBits.compress(Bitmap.CompressFormat.PNG, 90, fos);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                            Uri uri = Uri.fromFile(archivo);
+                            intent.setData(uri);
+                            getApplicationContext().sendBroadcast(intent);
+                            tostada(getString(R.string.tostada_guardarBien));
+                        }
+                    }
+                });
+        alert.setNegativeButton(android.R.string.no,null);
+        alert.show();
+
     }
 
 

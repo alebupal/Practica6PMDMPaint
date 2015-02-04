@@ -7,9 +7,14 @@
     <string name="m_color">Color</string>
     <string name="m_configuracion">Configuracion</string>
     <string name="m_nuevo">Nuevo dibujo</string>
+    <string name="m_cargar">Cargar dibujo</string>
+    <string name="m_guardar">Guardar dibujo</string>
     <string name="tv_tamano">Tamaño</string>
     <string name="tv_forma">Forma</string>
     <string name="tv_relleno">Relleno</string>
     <string name="btAceptar">Aceptar</string>
+    <string name="t_guardar">Nombre imagen</string>
+    <string name="tostada_guardar">Escribe algún nombre</string>
+    <string name="tostada_guardarBien">Imagen guardada correctamente</string>
 
 </resources>

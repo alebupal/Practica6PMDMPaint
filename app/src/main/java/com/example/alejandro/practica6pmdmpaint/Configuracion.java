@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 
 public class Configuracion extends ActionBarActivity {
-    private RadioButton rbPincel, rbGoma, rbRectangulo, rbLinea, rbCirculo;
+    private RadioButton rbPincel, rbGoma, rbRectangulo, rbLinea, rbCirculo,rbElipse;
     private RadioGroup rg;
     private SeekBar sb;
     private CheckBox cbRelleno;
@@ -34,6 +34,7 @@ public class Configuracion extends ActionBarActivity {
         rbRectangulo = (RadioButton) findViewById(R.id.rbRectangulo);
         rbCirculo = (RadioButton) findViewById(R.id.rbCirculo);
         rbLinea = (RadioButton) findViewById(R.id.rbLinea);
+        rbElipse = (RadioButton) findViewById(R.id.rbElipse);
         rg = (RadioGroup) findViewById(R.id.rg);
         sb = (SeekBar) findViewById(R.id.seekBar);
         cbRelleno = (CheckBox) findViewById(R.id.cbRelleno);
@@ -55,12 +56,18 @@ public class Configuracion extends ActionBarActivity {
         } else if (forma.compareToIgnoreCase("rectangulo") == 0) {
             rbRectangulo.setChecked(true);
             if (relleno == true) {
-                Log.v("ree", "");
                 cbRelleno.setChecked(true);
             }else if(relleno == false){
                 cbRelleno.setChecked(false);
             }
-        } else if (forma.compareToIgnoreCase("pincel") == 0) {
+        }else if (forma.compareToIgnoreCase("elipse") == 0) {
+            rbElipse.setChecked(true);
+            if (relleno == true) {
+                cbRelleno.setChecked(true);
+            }else if(relleno == false){
+                cbRelleno.setChecked(false);
+            }
+        }  else if (forma.compareToIgnoreCase("pincel") == 0) {
             rbPincel.setChecked(true);
             cbRelleno.setEnabled(false);
         } else if (forma.compareToIgnoreCase("goma") == 0) {
@@ -96,37 +103,26 @@ public class Configuracion extends ActionBarActivity {
                 }else if(cbRelleno.isChecked()==false){
                     relleno = false;
                 }
-
-            }
-        });
-        cbRelleno.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (cbRelleno.isChecked()) {
-                    relleno = true;
-                }else if(cbRelleno.isChecked()==false){
-                    Log.v("falso","");
-                    relleno = false;
-                }
-                Log.v("estado",cbRelleno.isChecked()+"");
-
             }
         });
 
         rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (rbRectangulo.isChecked() || rbCirculo.isChecked()) {
+                if (rbRectangulo.isChecked() || rbCirculo.isChecked() || rbElipse.isChecked()) {
                     cbRelleno.setEnabled(true);
                 } else {
                     cbRelleno.setEnabled(false);
                     cbRelleno.setChecked(false);
                     relleno=false;
                 }
+
                 if (rbRectangulo.isChecked()) {
                     forma = "rectangulo";
                 } else if (rbCirculo.isChecked()) {
                     forma = "circulo";
+                }else if (rbElipse.isChecked()) {
+                    forma = "elipse";
                 } else if (rbPincel.isChecked()) {
                     forma = "pincel";
                 } else if (rbGoma.isChecked()) {

@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -41,9 +43,20 @@ public class Vista extends View implements Serializable {
 
     }
 
-    public void setColor(int e){
-        this.color=e;
-        Log.v("cambio",""+e);
+    public Bitmap getMapaDeBits() {
+        return mapaDeBits;
+    }
+
+    public void setMapaDeBits(Bitmap mapaDeBits) {
+        this.mapaDeBits = mapaDeBits;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 
     public float getTamano() {
@@ -83,14 +96,16 @@ public class Vista extends View implements Serializable {
     public boolean onTouchEvent(MotionEvent event) {
         if(getForma().compareToIgnoreCase("circulo")==0){
             herramientaCirculo(event);
-        }else if(getForma().compareToIgnoreCase("pincel")==0 || getForma().compareToIgnoreCase("goma")==0){
+        }else if(getForma().compareToIgnoreCase("pincel")==0 ||getForma().compareToIgnoreCase("goma")==0 ){
             herramientaPincel(event);
-        }
-        else if(getForma().compareToIgnoreCase("linea")==0){
+        }else if(getForma().compareToIgnoreCase("linea")==0){
             herramientaLinea(event);
         }else if(getForma().compareToIgnoreCase("rectangulo")==0){
             herramientaRectangulo(event);
+        }else if(getForma().compareToIgnoreCase("elipse")==0){
+            herramientaElipse(event);
         }
+        invalidate();
         return true;
     }
 
@@ -102,6 +117,8 @@ public class Vista extends View implements Serializable {
 
         if(getForma().compareToIgnoreCase("circulo")==0){
             drawCirculo(canvas);
+        }if(getForma().compareToIgnoreCase("elipse")==0){
+            drawElipse(canvas);
         }else if(getForma().compareToIgnoreCase("pincel")==0){
             drawPincel(canvas);
         }else if(getForma().compareToIgnoreCase("linea")==0){
@@ -116,7 +133,18 @@ public class Vista extends View implements Serializable {
 
 
 
-
+    public void drawGoma(Canvas canvas){
+        pincel.setColor(Color.WHITE);
+        pincel.setStrokeWidth(tamano);
+        canvas.drawPath(rectaPoligonal, pincel);
+        pincel.setStyle(Paint.Style.STROKE);
+    }
+    public void drawPincel(Canvas canvas){
+        pincel.setColor(color);
+        pincel.setStrokeWidth(tamano);
+        canvas.drawPath(rectaPoligonal, pincel);
+        pincel.setStyle(Paint.Style.STROKE);
+    }
     public void herramientaPincel(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
@@ -126,6 +154,7 @@ public class Vista extends View implements Serializable {
                 y0 = yi = event.getY();
                 rectaPoligonal.reset();
                 rectaPoligonal.moveTo(x0, y0);
+                invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
                 rectaPoligonal.quadTo(xi, yi, (x + xi) / 2, (y + yi) / 2);
@@ -141,18 +170,19 @@ public class Vista extends View implements Serializable {
                 yi = y;
                 lienzoFondo.drawPath(rectaPoligonal, pincel);
                 x0 = y0 = xi = yi = -1;
+                rectaPoligonal.reset();
                 invalidate();
                 break;
         }
-
     }
 
-    public void drawPincel(Canvas canvas){
+
+    public void drawLinea(Canvas canvas){
         pincel.setColor(color);
         pincel.setStrokeWidth(tamano);
-        canvas.drawPath(rectaPoligonal, pincel);
+        canvas.drawLine(x0, y0, xi, yi, pincel);
+        pincel.setStyle(Paint.Style.STROKE);
     }
-
     public void herramientaLinea(MotionEvent event){
         float x = event.getX();
         float y = event.getY();
@@ -160,6 +190,7 @@ public class Vista extends View implements Serializable {
             case MotionEvent.ACTION_DOWN:
                 x0 = x;
                 y0 = y;
+                invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
                 xi = x;
@@ -174,24 +205,25 @@ public class Vista extends View implements Serializable {
 
     }
 
-    public void drawLinea(Canvas canvas){
+    public void drawCirculo(Canvas canvas){
         pincel.setColor(color);
         pincel.setStrokeWidth(tamano);
-        canvas.drawLine(x0, y0, xi, yi, pincel);
+        canvas.drawCircle(x0, y0, (float) radio, pincel);
     }
-
     public void herramientaCirculo(MotionEvent event){
         float x = event.getX();
         float y = event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                y0 = y;
                 if(relleno==true){
                     pincel.setStyle(Paint.Style.FILL);
                 }else if (relleno==false){
                     pincel.setStyle(Paint.Style.STROKE);
                 }
-                x0 = x;
-                y0 = y;
+                x0 = xi = x;
+                y0 = yi = y;
+                invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
                 xi = x;
@@ -210,13 +242,17 @@ public class Vista extends View implements Serializable {
 
     }
 
-    public void drawCirculo(Canvas canvas){
+    public void drawElipse(Canvas canvas){
         pincel.setColor(color);
         pincel.setStrokeWidth(tamano);
-        canvas.drawCircle(x0, y0, (float) radio, pincel);
+        float xorigen = Math.min(x0, xi);
+        float xdestino = Math.max(x0, xi);
+        float yorigen = Math.min(y0, yi);
+        float ydestino = Math.max(y0, yi);
+        RectF rf = new RectF(xorigen, yorigen, xdestino, ydestino);
+        canvas.drawOval(rf,pincel);
     }
-
-    public void herramientaRectangulo(MotionEvent event){
+    public void herramientaElipse(MotionEvent event){
         float x = event.getX();
         float y = event.getY();
         switch (event.getAction()) {
@@ -226,8 +262,9 @@ public class Vista extends View implements Serializable {
                 }else if (relleno==false){
                     pincel.setStyle(Paint.Style.STROKE);
                 }
-                x0 = x;
-                y0 = y;
+                x0 = xi = x;
+                y0 = yi = y;
+                invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
                 xi = x;
@@ -237,7 +274,8 @@ public class Vista extends View implements Serializable {
             case MotionEvent.ACTION_UP:
                 xi = x;
                 yi = y;
-                lienzoFondo.drawRect(x0, y0, xi, yi, pincel);
+                RectF rf = new RectF(x0, y0, xi, yi);
+                lienzoFondo.drawOval(rf,pincel);
                 invalidate();
                 break;
         }
@@ -253,11 +291,56 @@ public class Vista extends View implements Serializable {
         float ydestino = Math.max(y0, yi);
         canvas.drawRect(xorigen, yorigen, xdestino, ydestino, pincel);
     }
+    public void herramientaRectangulo(MotionEvent event){
+        float x = event.getX();
+        float y = event.getY();
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if(relleno==true){
+                    pincel.setStyle(Paint.Style.FILL);
+                }else if (relleno==false){
+                    pincel.setStyle(Paint.Style.STROKE);
+                }
+                x0 = xi = x;
+                y0 = yi = y;
+                invalidate();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                xi = x;
+                yi = y;
+                invalidate();
+                break;
+            case MotionEvent.ACTION_UP:
+                xi = x;
+                yi = y;
+                float xorigen = Math.min(x0, xi);
+                float xdestino = Math.max(x0, xi);
+                float yorigen = Math.min(y0, yi);
+                float ydestino = Math.max(y0, yi);
+                lienzoFondo.drawRect(xorigen, yorigen, xdestino, ydestino, pincel);
+                invalidate();
+                break;
+        }
 
-    public void drawGoma(Canvas canvas){
-        pincel.setColor(Color.WHITE);
-        pincel.setStrokeWidth(tamano);
-        canvas.drawRect(x0, y0, xi, yi, pincel);
     }
+
+    public void cargarImagen(Bitmap bm){
+        if(bm!=null) {
+           /* Rect source = new Rect(0, 0, bm.getWidth(), bm.getHeight());
+            Rect bitmapRect = new Rect(0, 0, this.getWidth(), this.getHeight());*/
+            //lienzoFondo.drawBitmap(bm, source, bitmapRect, pincel);
+            float scaleFactor = Math.min( (float) this.getWidth() /  bm.getWidth(),(float)this.getHeight() /  bm.getHeight() );
+            Bitmap scaled = Bitmap.createScaledBitmap( bm,(int)(scaleFactor * bm.getWidth()),(int)(scaleFactor * bm.getHeight()),true );
+            lienzoFondo.drawBitmap(scaled, 0, 0, pincel);
+
+        } else {
+            lienzoFondo = new Canvas(mapaDeBits);
+            lienzoFondo.drawColor(Color.WHITE);
+        }
+    }
+
+
+
+
 
 }
